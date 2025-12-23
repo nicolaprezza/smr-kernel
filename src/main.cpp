@@ -26,6 +26,7 @@ void print_depth(std::string T){
 
 	std::string ker;
 	uint32_t it = 0;
+	uint32_t n = T.length();
 
 	while(T.length()>0){
 
@@ -36,7 +37,7 @@ void print_depth(std::string T){
 
 	}
 
-	std::cout << "recursion depth: " << it << std::endl;
+	std::cout << "file length: " << n << ". Recursion depth: " << it << std::endl;
 
 }
 
