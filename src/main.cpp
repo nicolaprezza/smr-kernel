@@ -15,6 +15,11 @@ void rts(
 	std::vector<std::pair<uint32_t, uint32_t>>& R 
 );
 
+void merge(
+	const std::string& T,
+	const std::vector<std::pair<uint32_t, uint32_t>>& p,
+	std::string& R
+);
 
 
 void process(std::string T){
@@ -46,7 +51,7 @@ void process(std::string T){
 
 //version reading stdin
 int main() {
-	
+
 	std::string T;
 
 	T.assign(
@@ -108,7 +113,6 @@ void K(std::string& T, std::string& ker){
 	//std::cout << "Computing roots of SMR of T..." << std::endl;
 	rts(T,SA,LCP,R);
 	//std::cout << "Success! found " << R.size() << " roots." << std::endl;
-
 	//for(auto p:R) std::cout << p.first << "," << p.second << std::endl;
 
 	std::string res;
@@ -116,18 +120,60 @@ void K(std::string& T, std::string& ker){
 	// step 3 extract characters avoiding overlaps
 
 	ker.clear();
+	merge(T, R, ker); 
+	//std::cout << ker << std::endl;
 
-	uint32_t j = 0; //last extracted character was j-1
+}
 
-	for(auto p : R){
+//assumes character 0 does not appear in T
+void merge(
+	const std::string& T,
+	const std::vector<std::pair<uint32_t, uint32_t>>& p,
+	std::string& res) {
 
-		for(uint32_t i = std::max(j,p.first); i<=p.second; ++i)
-			ker.push_back(T[i]);
+	res.clear();
+	if (p.empty()) return;
 
-		j = p.second+1;
+	// Pre-allocate pi vector to reuse memory and avoid reallocations
+	std::vector<int> pi;
 
+	for (const auto& range : p) {
+		uint32_t start = range.first;
+		uint32_t end = range.second;
+		if (start > end || start >= T.length()) continue;
+
+		size_t m = end - start + 1;
+		if (res.empty()) {
+			res.append(T, start, m);
+			continue;
+		}
+
+		size_t n = res.length();
+		size_t max_possible_overlap = std::min(n, m);
+
+		// Construct: [New Segment] + 0 + [Suffix of res]
+		std::string combine;
+		combine.reserve(m + 1 + max_possible_overlap);
+		combine.append(T, start, m);
+		combine.push_back(0);
+		combine.append(res, n - max_possible_overlap, max_possible_overlap);
+
+		// Compute KMP prefix function (linear time)
+		pi.assign(combine.length(), 0);
+		for (int i = 1, j = 0; i < (int)combine.length(); i++) {
+			while (j > 0 && combine[i] != combine[j])
+				j = pi[j - 1];
+			if (combine[i] == combine[j])
+				j++;
+			pi[i] = j;
+		}
+
+		// The last element in pi gives the longest prefix of segment that is a suffix of res
+		size_t overlap = pi.back();
+		
+		// Append only the non-overlapping suffix
+		res.append(T, start + overlap, m - overlap);
 	}
-	
 }
 
 
@@ -196,10 +242,8 @@ void rts(
 						}
 						
 						uint32_t longest_border = pi[len - 1];
-						uint32_t period = len - longest_border;
-						if (len % period == 0) {
-							root_len = period;
-						}
+						root_len = len - longest_border;
+							
 					}
 
 					// Store as (start, end) where end is inclusive
