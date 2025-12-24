@@ -31,6 +31,7 @@ void print_depth(std::string T){
 	while(T.length()>0){
 
 		K(T,ker);
+		//std::cout << ker << std::endl;
 		T = ker;
 		ker.clear();
 		++it;
@@ -78,8 +79,8 @@ int main() {
 		std::istreambuf_iterator<char>()
 	);
 
-	//process(T);
-	print_depth(T);
+	process(T);
+	//print_depth(T);
 
 }
 
