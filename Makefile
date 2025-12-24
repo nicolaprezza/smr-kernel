@@ -1,6 +1,6 @@
 OPTIONS=-O3 --std=c++17
 
-all: main gen_test
+all: main gen_test kernelize
 
 debug: OPTIONS=-O0 -g
 debug: all
@@ -13,6 +13,9 @@ main: build/libsais.o src/main.cpp
 
 gen_test: src/gen_test.cpp
 	g++ ${OPTIONS} src/gen_test.cpp -o build/gen_test
+
+kernelize: build/libsais.o src/kernelize.cpp
+	g++ ${OPTIONS} -I libsais/include/ src/kernelize.cpp build/libsais.o -o build/kernelize
 
 clean:
 	rm -rf ./build/*

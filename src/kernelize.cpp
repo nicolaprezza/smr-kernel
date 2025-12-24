@@ -20,45 +20,31 @@ std::string merge(
 );
 
 
-int recursion_depth(std::string T){
+void process(std::string T, uint32_t k){
 
-	uint32_t it = 0;
-	uint32_t n = T.length();
-
-	while(T.length()>0){
+	while(k > 0 and T.length()>0){
 
 		T = K(T);
-		++it;
-
+		--k;
 	}
 
-	return it;
+	std::cout << T;
 
 }
 
-void process(std::string T){
+//usage: stream | kernelize k    ---   where k>=0 is the number of applications of the kernelization function
+int main(int argc, char *argv[]) {
 
-	std::cout << "iteration\tkernel length" << std::endl;
-
-	std::cout << "0\t" << T.length() << std::endl;
-	T = K(T);
-	std::cout << "1\t" << T.length() << std::endl;
-
-	uint32_t it = 2;
-
-	while(T.length()>0){
-
-		T = K(T);
-		std::cout << it << "\t" << T.length() << std::endl;
-		++it;
-
+	if(argc>2){
+		std::cout << "Usage: kernelize [k]  (input/output: stdin/stdout; k>=0 is the number of applications of kernelization function; default: k=1)" << std::endl;
+		exit(0);
 	}
 
-}
+	uint32_t k = 1;
 
-//reads from stdin
-int main() {
-
+	if(argc>1)
+		k = std::stoi(argv[1]);
+	
 	std::string T;
 
 	T.assign(
@@ -66,8 +52,7 @@ int main() {
 		std::istreambuf_iterator<char>()
 	);
 
-	process(T);
-	//std::cout << recursion_depth(T);
+	process(T,k);
 
 }
 
@@ -95,7 +80,10 @@ std::string K(std::string& T){
 	//std::cout << "Computing periods of SMR of T..." << std::endl;
 	auto R = periods(T,SA,LCP);
 	//std::cout << "Success! found " << R.size() << " periods." << std::endl;
-	//for(auto p:R) std::cout << p.first << "," << p.second << std::endl;
+	
+	//std::cout << " *************  Periods **************" << std::endl;
+	//for(auto p:R)
+		//std::cout << std::string_view(&T[p.first], p.second - p.first + 1) << std::endl << std::endl;
 
 	std::string res;
 
