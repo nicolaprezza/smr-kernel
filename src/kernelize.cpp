@@ -93,7 +93,7 @@ std::string K(std::string& T){
 
 	// step 3 extract characters avoiding overlaps
 
-	return merge_simple(T, R); 
+	return merge(T, R); 
 
 }
 
